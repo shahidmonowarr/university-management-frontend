@@ -2,6 +2,8 @@
 
 import Form from "@/components/Forms/Form";
 import FormInput from "@/components/Forms/FormInput";
+import { useUserLoginMutation } from "@/redux/api/authApi";
+import { storeUserInfo } from "@/services/auth.service";
 import { Button, Col, Row } from "antd";
 import Image from "next/image";
 import { SubmitHandler } from "react-hook-form";
@@ -13,10 +15,16 @@ type FromValues = {
 };
 
 const LoginPage = () => {
-  const onsubmit: SubmitHandler<FromValues> = (data) => {
+  const [userLogin] = useUserLoginMutation();
+
+  const onsubmit: SubmitHandler<FromValues> = async (data: any) => {
     try {
-      console.log(data);
-    } catch (error) {}
+      const res = await userLogin({ ...data }).unwrap();
+      storeUserInfo({ accessToken: res?.data?.accessToken });
+      // console.log(res);
+    } catch (error: any) {
+      console.error(error);
+    }
   };
   return (
     <Row
