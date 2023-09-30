@@ -24,3 +24,7 @@ export const isLoggedIn: () => boolean = () => {
   // false if authToken is null or undefined
   return !!authToken;
 };
+
+export const removeUserInfo = (key: string) => {
+  return localStorage.removeItem(authKey);
+};
