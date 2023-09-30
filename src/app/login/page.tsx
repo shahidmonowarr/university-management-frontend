@@ -3,7 +3,7 @@
 import Form from "@/components/Forms/Form";
 import FormInput from "@/components/Forms/FormInput";
 import { useUserLoginMutation } from "@/redux/api/authApi";
-import { storeUserInfo } from "@/services/auth.service";
+import { isLoggedIn, storeUserInfo } from "@/services/auth.service";
 import { Button, Col, Row } from "antd";
 import Image from "next/image";
 import { SubmitHandler } from "react-hook-form";
@@ -16,6 +16,8 @@ type FromValues = {
 
 const LoginPage = () => {
   const [userLogin] = useUserLoginMutation();
+
+  console.log(isLoggedIn());
 
   const onsubmit: SubmitHandler<FromValues> = async (data: any) => {
     try {
