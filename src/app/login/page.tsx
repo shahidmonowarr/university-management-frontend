@@ -3,9 +3,10 @@
 import Form from "@/components/Forms/Form";
 import FormInput from "@/components/Forms/FormInput";
 import { useUserLoginMutation } from "@/redux/api/authApi";
-import { isLoggedIn, storeUserInfo } from "@/services/auth.service";
+import { storeUserInfo } from "@/services/auth.service";
 import { Button, Col, Row } from "antd";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
 import loginImage from "../../assets/login-image.png";
 
@@ -16,12 +17,16 @@ type FromValues = {
 
 const LoginPage = () => {
   const [userLogin] = useUserLoginMutation();
+  const router = useRouter();
 
-  console.log(isLoggedIn());
+  // console.log(isLoggedIn());
 
   const onsubmit: SubmitHandler<FromValues> = async (data: any) => {
     try {
       const res = await userLogin({ ...data }).unwrap();
+      if (res?.data?.accessToken) {
+        router.push("/profile");
+      }
       storeUserInfo({ accessToken: res?.data?.accessToken });
       // console.log(res);
     } catch (error: any) {
