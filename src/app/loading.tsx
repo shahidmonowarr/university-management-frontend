@@ -1,7 +1,16 @@
+import { Spin } from "antd";
+
 const Loading = () => {
   return (
-    <div>
-      <h1>Loading...</h1>
+    <div
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    >
+      <Spin size="large" />
     </div>
   );
 };
