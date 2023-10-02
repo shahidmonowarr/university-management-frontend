@@ -1,5 +1,6 @@
 "use client";
 
+import ActionBar from "@/components/ui/ActionBar";
 import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
 import { getUserInfo } from "@/services/auth.service";
 import { Button } from "antd";
@@ -17,10 +18,12 @@ const ManageDepartmentPage = () => {
           },
         ]}
       />
-      <h1>Manage Department</h1>
-      <Link href="/super_admin/department/create">
-        <Button type="primary">Create Department</Button>
-      </Link>
+
+      <ActionBar title="Department List">
+        <Link href="/super_admin/department/create">
+          <Button type="primary">Create Department</Button>
+        </Link>
+      </ActionBar>
     </div>
   );
 };
