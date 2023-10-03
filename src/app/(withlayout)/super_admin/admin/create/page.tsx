@@ -12,6 +12,8 @@ import {
   departmentOptions,
   genderOptions,
 } from "@/constants/global";
+import { adminSchema } from "@/schemas/admin";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Row } from "antd";
 import { useRouter } from "next/navigation";
 
@@ -42,7 +44,7 @@ const CreateAdminPage = () => {
       <h1>Create Admin Page</h1>
 
       <div>
-        <Form submitHandler={onsubmit}>
+        <Form submitHandler={onsubmit} resolver={yupResolver(adminSchema)}>
           <div
             style={{
               border: "1px solid #d9d9d9",

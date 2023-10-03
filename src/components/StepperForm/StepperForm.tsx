@@ -20,6 +20,7 @@ interface IStepsProps {
 const StepperForm = ({ steps, submitHandler, navigateLink }: IStepsProps) => {
   const router = useRouter();
 
+  // manage stepper state with local storage
   const [current, setCurrent] = useState<number>(
     !!getFromLocalStorage("step")
       ? Number(JSON.parse(getFromLocalStorage("step") as string).step)
