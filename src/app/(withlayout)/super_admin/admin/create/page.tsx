@@ -7,26 +7,47 @@ import FormSelectField from "@/components/Forms/FormSelectField";
 import FormTextArea from "@/components/Forms/FormTextArea";
 import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
 import UploadImage from "@/components/ui/UploadImage";
-import {
-  bloodGroupOptions,
-  departmentOptions,
-  genderOptions,
-} from "@/constants/global";
+import { bloodGroupOptions, genderOptions } from "@/constants/global";
+import { useAddAdminWithFormDataMutation } from "@/redux/api/adminApi";
+import { useDepartmentsQuery } from "@/redux/api/departmentApi";
 import { adminSchema } from "@/schemas/admin";
+import { IDepartment } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Col, Row } from "antd";
-import { useRouter } from "next/navigation";
+
+import { Button, Col, Row, message } from "antd";
 
 const CreateAdminPage = () => {
-  const router = useRouter();
+  const { data, isLoading } = useDepartmentsQuery({ limit: 100, page: 1 });
+  const [addAdminWithFormData] = useAddAdminWithFormDataMutation();
+  //@ts-ignore
+  const departments: IDepartment[] = data?.departments;
 
-  const onsubmit = async (data: any) => {
+  const departmentOptions =
+    departments &&
+    departments?.map((department) => {
+      return {
+        label: department?.title,
+        value: department?.id,
+      };
+    });
+
+  const onSubmit = async (values: any) => {
+    const obj = { ...values };
+    const file = obj["file"];
+    delete obj["file"];
+    const data = JSON.stringify(obj);
+    const formData = new FormData();
+    formData.append("file", file as Blob);
+    formData.append("data", data);
+    message.loading("Creating...");
     try {
-      console.log(data);
-    } catch (error: any) {
-      console.error(error);
+      await addAdminWithFormData(formData);
+      message.success("Admin created successfully!");
+    } catch (err: any) {
+      console.error(err.message);
     }
   };
+
   return (
     <div>
       <UMBreadCrumb
@@ -41,10 +62,10 @@ const CreateAdminPage = () => {
           },
         ]}
       />
-      <h1>Create Admin Page</h1>
+      <h1>Create Admin</h1>
 
       <div>
-        <Form submitHandler={onsubmit} resolver={yupResolver(adminSchema)}>
+        <Form submitHandler={onSubmit} resolver={yupResolver(adminSchema)}>
           <div
             style={{
               border: "1px solid #d9d9d9",
@@ -160,7 +181,7 @@ const CreateAdminPage = () => {
             </Row>
           </div>
 
-          {/* Basic info */}
+          {/* basic info */}
           <div
             style={{
               border: "1px solid #d9d9d9",
@@ -189,7 +210,7 @@ const CreateAdminPage = () => {
                   type="email"
                   name="admin.email"
                   size="large"
-                  label="Email"
+                  label="Email address"
                 />
               </Col>
               <Col
@@ -203,7 +224,7 @@ const CreateAdminPage = () => {
                   type="text"
                   name="admin.contactNo"
                   size="large"
-                  label="Contact Number"
+                  label="Contact No."
                 />
               </Col>
               <Col
@@ -217,7 +238,7 @@ const CreateAdminPage = () => {
                   type="text"
                   name="admin.emergencyContactNo"
                   size="large"
-                  label="Emergency Number"
+                  label="Emergency Contact No."
                 />
               </Col>
               <Col
@@ -229,7 +250,7 @@ const CreateAdminPage = () => {
               >
                 <FormDatePicker
                   name="admin.dateOfBirth"
-                  label="Date of Birth"
+                  label="Date of birth"
                   size="large"
                 />
               </Col>
@@ -244,7 +265,7 @@ const CreateAdminPage = () => {
                   size="large"
                   name="admin.bloodGroup"
                   options={bloodGroupOptions}
-                  label="Blood Group"
+                  label="Blood group"
                   placeholder="Select"
                 />
               </Col>
@@ -262,35 +283,24 @@ const CreateAdminPage = () => {
                   label="Designation"
                 />
               </Col>
-              <Col
-                className="gutter-row"
-                span={12}
-                style={{
-                  margin: "10px 0",
-                }}
-              >
+              <Col span={12} style={{ margin: "10px 0" }}>
                 <FormTextArea
                   name="admin.presentAddress"
-                  label="Present Address"
+                  label="Present address"
                   rows={4}
                 />
               </Col>
-              <Col
-                className="gutter-row"
-                span={12}
-                style={{
-                  margin: "10px 0",
-                }}
-              >
+
+              <Col span={12} style={{ margin: "10px 0" }}>
                 <FormTextArea
                   name="admin.permanentAddress"
-                  label="Permanent Address"
+                  label="Permanent address"
                   rows={4}
                 />
               </Col>
             </Row>
           </div>
-          <Button type="primary" htmlType="submit">
+          <Button htmlType="submit" type="primary">
             Create
           </Button>
         </Form>
