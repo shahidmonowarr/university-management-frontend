@@ -4,6 +4,7 @@ import ActionBar from "@/components/ui/ActionBar";
 import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
 import UMTable from "@/components/ui/UMTable";
 import { useDepartmentsQuery } from "@/redux/api/departmentApi";
+import { useDebounced } from "@/redux/hooks";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -28,6 +29,13 @@ const ManageDepartmentPage = () => {
   query["sortBy"] = sortBy;
   query["sortOrder"] = sortOrder;
   query["searchTerm"] = searchTerm;
+
+  const debouncedTerm = useDebounced({
+    searchQuery: searchTerm,
+    delay: 600,
+  });
+
+  if (!!debouncedTerm) query["searchTerm"] = debouncedTerm;
 
   const { data, isLoading } = useDepartmentsQuery({ ...query });
   const departments = data?.departments;
