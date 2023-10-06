@@ -176,7 +176,7 @@ const CreateAdminPage = () => {
                   marginBottom: "10px",
                 }}
               >
-                <UploadImage />
+                <UploadImage name="file" />
               </Col>
             </Row>
           </div>
