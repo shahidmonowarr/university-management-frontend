@@ -7,45 +7,54 @@ import FormSelectField from "@/components/Forms/FormSelectField";
 import FormTextArea from "@/components/Forms/FormTextArea";
 import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
 import UploadImage from "@/components/ui/UploadImage";
-import { bloodGroupOptions, genderOptions } from "@/constants/global";
-import { useAddAdminWithFormDataMutation } from "@/redux/api/adminApi";
-import { useDepartmentsQuery } from "@/redux/api/departmentApi";
-import { adminSchema } from "@/schemas/admin";
-import { IDepartment } from "@/types";
-import { yupResolver } from "@hookform/resolvers/yup";
-
+import {
+  bloodGroupOptions,
+  departmentOptions,
+  genderOptions,
+} from "@/constants/global";
+import { useAdminQuery, useUpdateAdminMutation } from "@/redux/api/adminApi";
 import { Button, Col, Row, message } from "antd";
 
-const CreateAdminPage = () => {
-  const { data, isLoading } = useDepartmentsQuery({ limit: 100, page: 1 });
-  const [addAdminWithFormData] = useAddAdminWithFormDataMutation();
-  //@ts-ignore
-  const departments: IDepartment[] = data?.departments;
+type IDProps = {
+  params: any;
+};
 
-  const departmentOptions =
-    departments &&
-    departments?.map((department) => {
-      return {
-        label: department?.title,
-        value: department?.id,
-      };
-    });
+const EditAdminPage = ({ params }: IDProps) => {
+  const { id } = params;
+  const { data, isLoading } = useAdminQuery(id);
+  const [updateAdmin] = useUpdateAdminMutation();
+  console.log("data", data);
 
-  const onSubmit = async (values: any) => {
-    const obj = { ...values };
-    const file = obj["file"];
-    delete obj["file"];
-    const data = JSON.stringify(obj);
-    const formData = new FormData();
-    formData.append("file", file as Blob);
-    formData.append("data", data);
+  const onSubmit = async (values: { title: string }) => {
+    message.loading("Updating....");
     try {
-      message.loading("Creating...");
-      await addAdminWithFormData(formData);
-      message.success("Admin created successfully!");
+      await updateAdmin({ id, body: values });
+      message.success("Department Updated Successfully");
     } catch (err: any) {
-      console.error(err.message);
+      message.error(err.message);
     }
+  };
+
+  const defaultValues = {
+    admin: {
+      name: {
+        firstName: data?.name?.firstName || "",
+        middleName: data?.name?.middleName || "",
+        lastName: data?.name?.lastName || "",
+      },
+      password: "",
+      gender: data?.gender || "",
+      managementDepartment: data?.managementDepartment?.title || "",
+      email: data?.email || "",
+      contactNo: data?.contactNo || "",
+      emergencyContactNo: data?.emergencyContactNo || "",
+      dateOfBirth: data?.dateOfBirth || null,
+      bloodGroup: data?.bloodGroup || "",
+      designation: data?.designation || "",
+      presentAddress: data?.presentAddress || "",
+      permanentAddress: data?.permanentAddress || "",
+    },
+    file: null,
   };
 
   return (
@@ -62,10 +71,10 @@ const CreateAdminPage = () => {
           },
         ]}
       />
-      <h1>Create Admin</h1>
+      <h1>Edit Admin</h1>
 
       <div>
-        <Form submitHandler={onSubmit} resolver={yupResolver(adminSchema)}>
+        <Form submitHandler={onSubmit} defaultValues={defaultValues}>
           <div
             style={{
               border: "1px solid #d9d9d9",
@@ -301,7 +310,7 @@ const CreateAdminPage = () => {
             </Row>
           </div>
           <Button htmlType="submit" type="primary">
-            Create
+            Update
           </Button>
         </Form>
       </div>
@@ -309,4 +318,4 @@ const CreateAdminPage = () => {
   );
 };
 
-export default CreateAdminPage;
+export default EditAdminPage;
