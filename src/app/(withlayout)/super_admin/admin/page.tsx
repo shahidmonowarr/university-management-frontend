@@ -2,7 +2,7 @@
 import ActionBar from "@/components/ui/ActionBar";
 import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
 import UMTable from "@/components/ui/UMTable";
-import { useAdminsQuery } from "@/redux/api/adminApi";
+import { useAdminsQuery, useDeleteAdminMutation } from "@/redux/api/adminApi";
 import { useDebounced } from "@/redux/hooks";
 import { IDepartment } from "@/types";
 import {
@@ -11,7 +11,7 @@ import {
   EyeOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input, Modal, message } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useState } from "react";
@@ -24,6 +24,7 @@ const AdminPage = () => {
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [deleteAdmin] = useDeleteAdminMutation();
 
   query["limit"] = size;
   query["page"] = page;
@@ -42,6 +43,25 @@ const AdminPage = () => {
 
   const admins = data?.admins;
   const meta = data?.meta;
+
+  const deleteHandler = async (id: string) => {
+    Modal.confirm({
+      title: "Confirm Deletion",
+      content: "Are you sure you want to delete this admin?",
+      onOk: async () => {
+        message.loading("Deleting....");
+        try {
+          await deleteAdmin(id);
+          message.success("Admin Deleted Successfully");
+        } catch (err: any) {
+          message.error(err.message);
+        }
+      },
+      onCancel: () => {
+        // Do nothing if the user clicks "No" in the modal
+      },
+    });
+  };
 
   const columns = [
     {
@@ -87,26 +107,26 @@ const AdminPage = () => {
     {
       title: "Action",
       dataIndex: "id",
-      render: function (data: any) {
+      render: function (id: any) {
         return (
           <>
-            <Link href={`/super_admin/admin/details/${data.id}`}>
-              <Button onClick={() => console.log(data)} type="primary">
+            <Link href={`/super_admin/admin/details/${id}`}>
+              <Button onClick={() => console.log(id)} type="primary">
                 <EyeOutlined />
               </Button>
             </Link>
-            <Link href={`/super_admin/admin/edit/${data.id}`}>
+            <Link href={`/super_admin/admin/edit/${id}`}>
               <Button
                 style={{
                   margin: "0px 5px",
                 }}
-                onClick={() => console.log(data)}
+                onClick={() => console.log(id)}
                 type="primary"
               >
                 <EditOutlined />
               </Button>
             </Link>
-            <Button onClick={() => console.log(data)} type="primary" danger>
+            <Button onClick={() => deleteHandler(id)} type="primary" danger>
               <DeleteOutlined />
             </Button>
           </>
