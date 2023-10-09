@@ -1,23 +1,24 @@
 "use client";
-import ActionBar from "@/components/ui/ActionBar";
 import UMBreadCrumb from "@/components/ui/UMBreadCrumb";
 import UMTable from "@/components/ui/UMTable";
-import {
-  useAcademicFacultiesQuery,
-  useDeleteAcademicFacultyMutation,
-} from "@/redux/api/academic/facultyApi";
-import { useDebounced } from "@/redux/hooks";
 import {
   DeleteOutlined,
   EditOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import { Button, Input, message } from "antd";
+
+import ActionBar from "@/components/ui/ActionBar";
+import {
+  useAcademicSemestersQuery,
+  useDeleteAcademicSemesterMutation,
+} from "@/redux/api/academic/semesterApi";
+import { useDebounced } from "@/redux/hooks";
+import { Button, Input, Modal, message } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useState } from "react";
 
-const ACFacultyPage = () => {
+const ACSemesterPage = () => {
   const query: Record<string, any> = {};
 
   const [page, setPage] = useState<number>(1);
@@ -25,7 +26,7 @@ const ACFacultyPage = () => {
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [deleteAcademicFaculty] = useDeleteAcademicFacultyMutation();
+  const [deleteAcademicSemester] = useDeleteAcademicSemesterMutation();
 
   query["limit"] = size;
   query["page"] = page;
@@ -41,21 +42,21 @@ const ACFacultyPage = () => {
   if (!!debouncedTerm) {
     query["searchTerm"] = debouncedTerm;
   }
-  const { data, isLoading } = useAcademicFacultiesQuery({ ...query });
+  const { data, isLoading } = useAcademicSemestersQuery({ ...query });
 
-  const academicFaculties = data?.academicFaculties;
+  const academicSemesters = data?.academicSemesters;
   const meta = data?.meta;
 
   const deleteHandler = async (id: string) => {
     Modal.confirm({
       title: "Confirm Deletion",
-      content: "Are you sure you want to delete this department?",
+      content: "Are you sure you want to delete this semester?",
       onOk: async () => {
         message.loading("Deleting.....");
         try {
-          const res = await deleteAcademicFaculty(id);
+          const res = await deleteAcademicSemester(id);
           if (res) {
-            message.success("Department Deleted successfully");
+            message.success("Semester Deleted successfully");
           }
         } catch (err: any) {
           message.error(err.message);
@@ -71,7 +72,27 @@ const ACFacultyPage = () => {
       dataIndex: "title",
     },
     {
-      title: "CreatedAt",
+      title: "Code",
+      dataIndex: "code",
+      sorter: true,
+    },
+    {
+      title: "Start month",
+      dataIndex: "startMonth",
+      sorter: true,
+    },
+    {
+      title: "End month",
+      dataIndex: "endMonth",
+      sorter: true,
+    },
+    {
+      title: "Year",
+      dataIndex: "year",
+      sorter: true,
+    },
+    {
+      title: "Created at",
       dataIndex: "createdAt",
       render: function (data: any) {
         return data && dayjs(data).format("MMM D, YYYY hh:mm A");
@@ -80,10 +101,11 @@ const ACFacultyPage = () => {
     },
     {
       title: "Action",
+      dataIndex: "id",
       render: function (data: any) {
         return (
           <>
-            <Link href={`/admin/academic/faculty/edit/${data?.id}`}>
+            <Link href={`/admin/academic/semester/edit/${data?.id}`}>
               <Button
                 style={{
                   margin: "0px 5px",
@@ -136,7 +158,7 @@ const ACFacultyPage = () => {
         ]}
       />
 
-      <ActionBar title="Academic Faculty List">
+      <ActionBar title="Academic Semester List">
         <Input
           type="text"
           size="large"
@@ -149,7 +171,7 @@ const ACFacultyPage = () => {
           }}
         />
         <div>
-          <Link href="/admin/academic/faculty/create">
+          <Link href="/admin/academic/semester/create">
             <Button type="primary">Create</Button>
           </Link>
           {(!!sortBy || !!sortOrder || !!searchTerm) && (
@@ -167,7 +189,7 @@ const ACFacultyPage = () => {
       <UMTable
         loading={isLoading}
         columns={columns}
-        dataSource={academicFaculties}
+        dataSource={academicSemesters}
         pageSize={size}
         totalPages={meta?.total}
         showSizeChanger={true}
@@ -179,4 +201,4 @@ const ACFacultyPage = () => {
   );
 };
 
-export default ACFacultyPage;
+export default ACSemesterPage;
