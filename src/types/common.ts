@@ -71,6 +71,25 @@ export interface IFaculty {
   __v: number;
 }
 
+export interface IStudent {
+  id: string;
+  name: Name & { id: string };
+  dateOfBirth: string;
+  gender: string;
+  bloodGroup: string;
+  email: string;
+  contactNo: string;
+  emergencyContactNo: string;
+  presentAddress: string;
+  permanentAddress: string;
+  guardian: Guardian & { id: string };
+  localGuardian: LocalGuardian & { id: string };
+  department: string;
+  subject: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Guardian {
   fatherName: string;
   fatherOccupation: string;
