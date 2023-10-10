@@ -153,3 +153,43 @@ export interface IRoom {
   buildingId: string;
   building: IBuilding;
 }
+
+export interface ICourse {
+  id: string;
+  title: string;
+  code: string;
+  credits: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: null;
+  prerequisites?: null[] | null;
+  prerequisiteFor?: null[] | null;
+}
+
+export interface IAcademicCoreSemester {
+  id: string;
+  syncId?: null;
+  title: string;
+  code: string;
+  year: number;
+  isCurrent?: boolean;
+  startMonth: string;
+  endMonth: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: null;
+}
+
+export interface ISemesterRegistration {
+  id: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  maxCredit: number;
+  minCredit: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: null;
+  academicSemesterId: string;
+  academicSemester?: IAcademicCoreSemester;
+}
