@@ -301,3 +301,13 @@ export interface IMyCourse {
   status: string;
   course: ICourse;
 }
+
+export interface IFacultyCourse {
+  course: ICourse;
+  sections?: SectionsEntity[] | null;
+}
+
+export interface SectionsEntity {
+  section: IOfferedCourseSection;
+  classSchedules?: IOfferedCourseSchedule[] | null;
+}
