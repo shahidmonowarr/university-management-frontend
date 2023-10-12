@@ -6,6 +6,7 @@ import { useFacultyCourseStudentsQuery } from "@/redux/api/facultyApi";
 import { useDebounced } from "@/redux/hooks";
 import { ReloadOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
+import Link from "next/link";
 import { useState } from "react";
 
 const FacultyCoursesStudentsPage = ({ searchParams }: Record<string, any>) => {
@@ -78,7 +79,11 @@ const FacultyCoursesStudentsPage = ({ searchParams }: Record<string, any>) => {
       render: function (data: any) {
         return (
           <div key="1" style={{ margin: "20px 0px" }}>
-            <Button type="primary">View Marks</Button>
+            <Link
+              href={`/faculty/student-result?studentId=${data?.id}&courseId=${courseId}&offeredCourseSectionId=${offeredCourseSectionId}`}
+            >
+              <Button type="primary">View Marks</Button>
+            </Link>
           </div>
         );
       },
